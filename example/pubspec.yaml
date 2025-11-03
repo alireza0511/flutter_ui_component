@@ -11,6 +11,7 @@ dependencies:
     sdk: flutter
   flutter_ui_component:
     path: ../
+  json_dynamic_widget: ^10.0.2
 
 dev_dependencies:
   flutter_test:

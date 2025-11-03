@@ -10,16 +10,15 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  json_dynamic_widget: ^7.0.0
-  json_class: ^7.0.0
-  json_theme: ^7.0.0
+  json_dynamic_widget: ^10.0.2
+  json_class: ^3.0.1
+  json_theme: ^9.0.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
   golden_toolkit: ^0.15.0
-  accessibility_test: ^0.1.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

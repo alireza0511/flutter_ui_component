@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ui_component/flutter_ui_component.dart';
+import 'screens/json_preview_screen.dart';
 
 void main() {
   runApp(const ExampleApp());
@@ -76,6 +77,17 @@ class _ComponentShowcaseState extends State<ComponentShowcase> {
         title: const Text('Flutter UI Components'),
         centerTitle: true,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.code),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const JsonPreviewScreen(),
+                ),
+              );
+            },
+            tooltip: 'JSON Preview',
+          ),
           IconButton(
             icon: Icon(widget.isDarkMode ? Icons.light_mode : Icons.dark_mode),
             onPressed: widget.onThemeToggle,
