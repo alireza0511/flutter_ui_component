@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ui_component/flutter_ui_component.dart';
+import 'screens/account_selection_example_screen.dart';
 import 'screens/json_preview_screen.dart';
 
 void main() {
@@ -79,6 +80,17 @@ class _ComponentShowcaseState extends State<ComponentShowcase> {
         title: const Text('Flutter UI Components'),
         centerTitle: true,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.account_balance_wallet),
+            onPressed: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => const AccountSelectionExampleScreen(),
+                ),
+              );
+            },
+            tooltip: 'Account Selection',
+          ),
           IconButton(
             icon: const Icon(Icons.code),
             onPressed: () {
