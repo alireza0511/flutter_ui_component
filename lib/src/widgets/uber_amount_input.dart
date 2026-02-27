@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:json_dynamic_widget/json_dynamic_widget.dart';
 
 class UberAmountInput extends StatefulWidget {
   const UberAmountInput({
@@ -41,6 +42,48 @@ class UberAmountInput extends StatefulWidget {
 
   @override
   State<UberAmountInput> createState() => _UberAmountInputState();
+
+  /// Converts the UberAmountInput widget to a JSON representation
+  /// for reverse encoding with json_dynamic_widget
+  Map<String, dynamic> toJson() {
+    return {
+      'type': 'uber_amount_input',
+      'args': {
+        'initialValue': initialValue,
+        'label': label,
+        'hintText': hintText,
+        'helperText': helperText,
+        'errorText': errorText,
+        'enabled': enabled,
+        'currency': currency,
+        'maxDecimalPlaces': maxDecimalPlaces,
+        'maxAmount': maxAmount,
+        'minAmount': minAmount,
+        'semanticLabel': semanticLabel,
+        'autofocus': autofocus,
+        'textAlign': _encodeTextAlign(textAlign),
+      }..removeWhere((key, value) => value == null),
+    };
+  }
+
+  /// Custom encoder for TextAlign enum values
+  @JsonArgEncoder('textAlign')
+  static String _encodeTextAlign(TextAlign value) {
+    switch (value) {
+      case TextAlign.left:
+        return 'left';
+      case TextAlign.right:
+        return 'right';
+      case TextAlign.center:
+        return 'center';
+      case TextAlign.justify:
+        return 'justify';
+      case TextAlign.start:
+        return 'start';
+      case TextAlign.end:
+        return 'end';
+    }
+  }
 }
 
 class _UberAmountInputState extends State<UberAmountInput> {

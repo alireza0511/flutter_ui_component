@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:example/screens/source.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:json_dynamic_widget/json_dynamic_widget.dart';
@@ -304,7 +305,8 @@ final Map<String, String> _examples =
     // Ensure the registry is initialized
     JsonWidgetRegistry.instance;
     // Load the first example by default
-    _loadExample(_examples.values.first);
+    // _loadExample(_examples.values.first);
+    _loadExample(examples.values.first);
   }
 
   @override
