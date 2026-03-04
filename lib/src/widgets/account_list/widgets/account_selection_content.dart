@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/account_item.dart';
+import '../models/group_item.dart';
 import '../models/sub_account_item.dart';
 import 'account_card.dart';
 import 'account_group_header.dart';
@@ -11,7 +12,7 @@ class AccountSelectionContent extends StatelessWidget {
   const AccountSelectionContent({
     super.key,
     required this.title,
-    required this.accounts,
+    required this.groupItems,
     this.subtitle,
     this.selectedAccountId,
     this.onAccountSelected,
@@ -26,7 +27,7 @@ class AccountSelectionContent extends StatelessWidget {
 
   final String title;
   final String? subtitle;
-  final List<AccountItem> accounts;
+  final List<GroupItem> groupItems;
   final String? selectedAccountId;
   final void Function(AccountItem account, SubAccountItem? subAccount)?
       onAccountSelected;
@@ -70,37 +71,35 @@ class AccountSelectionContent extends StatelessWidget {
 
   List<Widget> _buildItemList() {
     final items = <Widget>[];
-    String? lastGroup;
 
-    for (final account in accounts) {
-      if (account.group != lastGroup) {
-        lastGroup = account.group;
+    for (final group in groupItems) {
+      items.add(
+        groupHeaderBuilder?.call(group.label) ??
+            AccountGroupHeader(label: group.label),
+      );
+
+      for (final account in group.accounts) {
+        final hasSubItems =
+            account.subItems != null && account.subItems!.isNotEmpty;
+
         items.add(
-          groupHeaderBuilder?.call(account.group) ??
-              AccountGroupHeader(label: account.group),
+          Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: hasSubItems
+                ? AccountWithSubAccountsCard(
+                    account: account,
+                    selectedSubAccountId: selectedAccountId,
+                    onSubAccountTap: (sub) =>
+                        onAccountSelected?.call(account, sub),
+                  )
+                : AccountCard(
+                    account: account,
+                    isSelected: selectedAccountId == account.id,
+                    onTap: () => onAccountSelected?.call(account, null),
+                  ),
+          ),
         );
       }
-
-      final hasSubItems =
-          account.subItems != null && account.subItems!.isNotEmpty;
-
-      items.add(
-        Padding(
-          padding: const EdgeInsets.only(bottom: 8),
-          child: hasSubItems
-              ? AccountWithSubAccountsCard(
-                  account: account,
-                  selectedSubAccountId: selectedAccountId,
-                  onSubAccountTap: (sub) =>
-                      onAccountSelected?.call(account, sub),
-                )
-              : AccountCard(
-                  account: account,
-                  isSelected: selectedAccountId == account.id,
-                  onTap: () => onAccountSelected?.call(account, null),
-                ),
-        ),
-      );
     }
 
     if (showInfoBanner && infoMessage != null) {

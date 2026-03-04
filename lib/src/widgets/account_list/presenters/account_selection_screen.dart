@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
-import '../models/account_item.dart';
+import '../models/group_item.dart';
 import '../widgets/account_selection_content.dart';
 
 class AccountSelectionScreen extends StatefulWidget {
   const AccountSelectionScreen({
     super.key,
     required this.title,
-    required this.accounts,
+    required this.groupItems,
     this.subtitle,
-    this.selectedAccountId ,
+    this.selectedAccountId,
     this.showInfoBanner = false,
     this.infoMessage,
   });
 
   final String title;
-  final List<AccountItem> accounts;
+  final List<GroupItem> groupItems;
   final String? subtitle;
   final String? selectedAccountId;
   final bool showInfoBanner;
@@ -40,7 +40,7 @@ class _AccountSelectionScreenState extends State<AccountSelectionScreen> {
         child: AccountSelectionContent(
           title: widget.title,
           subtitle: widget.subtitle,
-          accounts: widget.accounts,
+          groupItems: widget.groupItems,
           selectedAccountId: _selectedId,
           showCloseButton: true,
           onClose: () => Navigator.pop(context),
@@ -48,7 +48,6 @@ class _AccountSelectionScreenState extends State<AccountSelectionScreen> {
             setState(() => _selectedId = sub?.id ?? account.id);
             Navigator.pop(context, sub ?? account);
           },
-         
           showInfoBanner: widget.showInfoBanner,
           infoMessage: widget.infoMessage,
         ),

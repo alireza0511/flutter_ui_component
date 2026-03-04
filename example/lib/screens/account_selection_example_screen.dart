@@ -1,74 +1,84 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_ui_component/flutter_ui_component.dart';
 
-final List<AccountItem> sampleAccounts = [
-  const AccountItem(
-    id: 'checking_1',
-    displayName: 'Checking Account...1234',
-    group: 'cash',
-    details: [
-      (label: 'Account Type', value: 'Checking'),
-      (label: 'Account Balance', value: '\$5,432.10'),
-    ],
-  ),
-  AccountItem(
-    id: 'savings_1',
-    displayName: 'Savings Account...5678',
-    group: 'cash',
-    details: const [
-      (label: 'Account Type', value: 'Savings'),
-      (label: 'Account Balance', value: '\$12,750.00'),
-    ],
-    subItems: const [
-      SubAccountItem(
-        id: 'goal_vacation',
-        displayName: 'Vacation to Switzerland...',
-        balance: 3200.00,
-        icon: Icons.flight,
+final List<GroupItem> sampleGroups = [
+  GroupItem(
+    label: 'Cash',
+    accounts: [
+      const AccountItem(
+        id: 'checking_1',
+        displayName: 'Checking Account...1234',
+        group: 'cash',
+        details: [
+          (label: 'Account Type', value: 'Checking'),
+          (label: 'Account Balance', value: '\$5,432.10'),
+        ],
       ),
-      SubAccountItem(
-        id: 'goal_emergency',
-        displayName: 'Emergency Fund',
-        balance: 8500.00,
-        icon: Icons.shield,
+      AccountItem(
+        id: 'savings_1',
+        displayName: 'Savings Account...5678',
+        group: 'cash',
+        details: const [
+          (label: 'Account Type', value: 'Savings'),
+          (label: 'Account Balance', value: '\$12,750.00'),
+        ],
+        subItems: const [
+          SubAccountItem(
+            id: 'goal_vacation',
+            displayName: 'Vacation to Switzerland...',
+            balance: 3200.00,
+            icon: Icons.flight,
+          ),
+          SubAccountItem(
+            id: 'goal_emergency',
+            displayName: 'Emergency Fund',
+            balance: 8500.00,
+            icon: Icons.shield,
+          ),
+          SubAccountItem(
+            id: 'goal_car',
+            displayName: 'New Car Savings',
+            balance: 1050.00,
+            icon: Icons.directions_car,
+          ),
+        ],
       ),
-      SubAccountItem(
-        id: 'goal_car',
-        displayName: 'New Car Savings',
-        balance: 1050.00,
-        icon: Icons.directions_car,
+    ],
+  ),
+  GroupItem(
+    label: 'Credit',
+    accounts: [
+      const AccountItem(
+        id: 'pcl_1',
+        displayName: 'Personal Credit Line...9012',
+        group: 'credit',
+        details: [
+          (label: 'Account Type', value: 'Personal Credit Line'),
+          (label: 'Available Credit', value: '\$7,500.00'),
+        ],
+      ),
+      const AccountItem(
+        id: 'cc_1',
+        displayName: 'Platinum Credit Card...3456',
+        group: 'credit',
+        details: [
+          (label: 'Account Type', value: 'Credit Card'),
+          (label: 'Available Credit', value: '\$4,200.00'),
+          (label: 'Current Balance', value: '\$1,823.45'),
+        ],
+      ),
+      const AccountItem(
+        id: 'cc_2',
+        displayName: 'Business Credit Card...7890',
+        group: 'credit',
+        details: [
+          (label: 'Account Type', value: 'Credit Card'),
+          (label: 'Available Credit', value: '\$10,000.00'),
+          (label: 'Current Balance', value: '\$456.78'),
+        ],
+        isEnabled: false,
       ),
     ],
-  ),
-  const AccountItem(
-    id: 'pcl_1',
-    displayName: 'Personal Credit Line...9012',
-    group: 'credit',
-    details: [
-      (label: 'Account Type', value: 'Personal Credit Line'),
-      (label: 'Available Credit', value: '\$7,500.00'),
-    ],
-  ),
-  const AccountItem(
-    id: 'cc_1',
-    displayName: 'Platinum Credit Card...3456',
-    group: 'credit',
-    details: [
-      (label: 'Account Type', value: 'Credit Card'),
-      (label: 'Available Credit', value: '\$4,200.00'),
-      (label: 'Current Balance', value: '\$1,823.45'),
-    ],
-  ),
-  const AccountItem(
-    id: 'cc_2',
-    displayName: 'Business Credit Card...7890',
-    group: 'credit',
-    details: [
-      (label: 'Account Type', value: 'Credit Card'),
-      (label: 'Available Credit', value: '\$10,000.00'),
-      (label: 'Current Balance', value: '\$456.78'),
-    ],
-    isEnabled: false,
   ),
 ];
 
@@ -158,7 +168,7 @@ class _AccountSelectionExampleScreenState
                     context,
                     title: 'Transfer From',
                     subtitle: 'Select an eligible account.',
-                    accounts: sampleAccounts,
+                    groupItems: sampleGroups,
                     selectedAccountId: 'checking_1',
                     
                     // _selectedAccountId,
@@ -189,7 +199,7 @@ class _AccountSelectionExampleScreenState
                     context,
                     title: 'Transfer From',
                     subtitle: 'Select an eligible account.',
-                    accounts: sampleAccounts,
+                    groupItems: sampleGroups,
                     selectedAccountId: _selectedAccountId,
                     showInfoBanner: true,
                     infoMessage:
@@ -220,7 +230,7 @@ class _AccountSelectionExampleScreenState
                       builder: (context) => AccountSelectionScreen(
                         title: 'Transfer From',
                         subtitle: 'Select an eligible account.',
-                        accounts: sampleAccounts,
+                        groupItems: sampleGroups,
                         selectedAccountId: _selectedAccountId,
                         showInfoBanner: true,
                         infoMessage:
@@ -270,7 +280,7 @@ class _AccountSelectionExampleScreenState
                 child: AccountSelectionContent(
                   title: 'Transfer From',
                   subtitle: 'Select an eligible account.',
-                  accounts: sampleAccounts,
+                  groupItems: sampleGroups,
                   selectedAccountId: _selectedAccountId,
                   showCloseButton: false,
                   onAccountSelected: (account, sub) {
