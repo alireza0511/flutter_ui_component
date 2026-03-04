@@ -51,14 +51,16 @@ class AccountWithSubAccountsCard extends StatelessWidget {
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                          const SizedBox(width: 12),
-                          Text(
-                            '\$${account.balance.toStringAsFixed(2)}',
-                            style:
-                                theme.textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w600,
+                          if (account.details.isNotEmpty) ...[
+                            const SizedBox(width: 12),
+                            Text(
+                              account.details.first.value,
+                              style:
+                                  theme.textTheme.titleSmall?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
-                          ),
+                          ],
                         ],
                       ),
                     ),

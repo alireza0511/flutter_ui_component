@@ -1,5 +1,4 @@
 // Models
-export 'models/account_type.dart';
 export 'models/account_item.dart';
 export 'models/sub_account_item.dart';
 

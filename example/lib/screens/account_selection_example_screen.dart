@@ -5,16 +5,20 @@ final List<AccountItem> sampleAccounts = [
   const AccountItem(
     id: 'checking_1',
     displayName: 'Checking Account...1234',
-    accountType: AccountType.checking,
     group: 'cash',
-    balance: 5432.10,
+    details: [
+      (label: 'Account Type', value: 'Checking'),
+      (label: 'Account Balance', value: '\$5,432.10'),
+    ],
   ),
   AccountItem(
     id: 'savings_1',
     displayName: 'Savings Account...5678',
-    accountType: AccountType.savings,
     group: 'cash',
-    balance: 12750.00,
+    details: const [
+      (label: 'Account Type', value: 'Savings'),
+      (label: 'Account Balance', value: '\$12,750.00'),
+    ],
     subItems: const [
       SubAccountItem(
         id: 'goal_vacation',
@@ -39,25 +43,31 @@ final List<AccountItem> sampleAccounts = [
   const AccountItem(
     id: 'pcl_1',
     displayName: 'Personal Credit Line...9012',
-    accountType: AccountType.personalCreditLine,
     group: 'credit',
-    balance: 7500.00,
+    details: [
+      (label: 'Account Type', value: 'Personal Credit Line'),
+      (label: 'Available Credit', value: '\$7,500.00'),
+    ],
   ),
   const AccountItem(
     id: 'cc_1',
     displayName: 'Platinum Credit Card...3456',
-    accountType: AccountType.creditCard,
     group: 'credit',
-    balance: 4200.00,
-    currentBalance: 1823.45,
+    details: [
+      (label: 'Account Type', value: 'Credit Card'),
+      (label: 'Available Credit', value: '\$4,200.00'),
+      (label: 'Current Balance', value: '\$1,823.45'),
+    ],
   ),
   const AccountItem(
     id: 'cc_2',
     displayName: 'Business Credit Card...7890',
-    accountType: AccountType.creditCard,
     group: 'credit',
-    balance: 10000.00,
-    currentBalance: 456.78,
+    details: [
+      (label: 'Account Type', value: 'Credit Card'),
+      (label: 'Available Credit', value: '\$10,000.00'),
+      (label: 'Current Balance', value: '\$456.78'),
+    ],
     isEnabled: false,
   ),
 ];

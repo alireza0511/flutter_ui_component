@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_ui_component/src/widgets/account_list/widgets/account_selection_bar.dart';
 import '../models/account_item.dart';
+import 'account_selection_bar.dart';
 
 class AccountCard extends StatelessWidget {
   const AccountCard({
@@ -59,23 +59,11 @@ class AccountCard extends StatelessWidget {
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        const SizedBox(height: 8),
-                        AccountInfoRow(
-                          label: 'Account Type',
-                          value: account.typeLabel,
-                        ),
-                        const SizedBox(height: 4),
-                        AccountInfoRow(
-                          label: account.balanceLabel,
-                          value:
-                              '\$${account.balance.toStringAsFixed(2)}',
-                        ),
-                        if (account.currentBalance != null) ...[
+                        for (final detail in account.details) ...[
                           const SizedBox(height: 4),
                           AccountInfoRow(
-                            label: 'Current Balance',
-                            value:
-                                '\$${account.currentBalance!.toStringAsFixed(2)}',
+                            label: detail.label,
+                            value: detail.value,
                           ),
                         ],
                       ],
