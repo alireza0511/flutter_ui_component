@@ -1,0 +1,127 @@
+
+{
+  "groups": [
+    {
+      "accountCategory": "CASH",
+      "accounts": [
+        {
+          "accountId": "41583c7e-593a-4baa-8110-96eec4883a58",
+          "accountStatus": "OPEN",
+          "accountType": "SAVINGS",
+          "accountCategories": [
+            "CASH"
+          ],
+          "name": "Premier Savings",
+          "nickName": "Premier Savings",
+          "shortNickName": "SAV4415",
+          "availableBalance": "87.49",
+          "currentBalance": "0.00",
+          "openingBalance": "10.13",
+          "principalBalance": "0.00",
+          "availableCredit": "0.00",
+          "odOptionsEligible": true,
+          "transferToEligible": true,
+          "transferFromEligible": true,
+          "quickBalanceEligible": true,
+          "billPayEligible": false,
+          "routingNumber": "044000024",
+          "defaultZellePayment": false,
+          "maskedAccountNumber": "*4415",
+          "displayName": "Premier Savings",
+          "account-deposits-envelopes": [
+            {
+              "accountDepositsEnvelopeId": "678",
+              "envelopeName": "Jamaica 2027",
+              "referenceEnvelopecategory": {
+                "referenceEnvelopecategoryId": "5",
+                "envelopecategoryName": "Vacation",
+                "envelopecategoryType": "organize"
+              },
+              "envelopeStatus": "active",
+              "envelopeBalance": "100.76",
+              "accountId": "1000002343",
+              "quickTipId": "30",
+              "envelopeCreatedDate": "2026-01-20",
+              "envelopeUpdatedDate": "2026-02-05",
+              "account-deposits-envelopes-goals": [
+                {
+                  "accountDepositsEnvelopesGoalId": "892",
+                  "accountDepositsEnvelopeId": "678",
+                  "goalStatus": "active",
+                  "goalTargetAmount": "1500.00",
+                  "goalTargetDate": "2027-02-01",
+                  "goalCompletionPercentage": "57.24",
+                  "goalCreatedDate": "2026-01-20",
+                  "goalUpdatedDate": "2026-02-23"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "empty": false
+    },
+    {
+      "accountCategory": "CASH",
+      "accounts": [
+        {
+          "accountId": "b72e1f3d-4a89-4c12-9e7f-2d8a5b6c3e01",
+          "accountStatus": "OPEN",
+          "accountType": "CHECKING",
+          "accountCategories": [
+            "CASH"
+          ],
+          "name": "Essential Checking",
+          "nickName": "Essential Checking",
+          "shortNickName": "CHK7821",
+          "availableBalance": "2341.56",
+          "currentBalance": "2341.56",
+          "openingBalance": "500.00",
+          "principalBalance": "0.00",
+          "availableCredit": "0.00",
+          "odOptionsEligible": false,
+          "transferToEligible": true,
+          "transferFromEligible": true,
+          "quickBalanceEligible": true,
+          "billPayEligible": true,
+          "routingNumber": "044000024",
+          "defaultZellePayment": true,
+          "maskedAccountNumber": "*7821",
+          "displayName": "Essential Checking"
+        }
+      ],
+      "empty": false
+    },
+    {
+      "accountCategory": "CREDIT",
+      "accounts": [
+        {
+          "accountId": "9f4d2a7c-8e31-4b5a-a6c9-1d3e7f8b2a04",
+          "accountStatus": "OPEN",
+          "accountType": "CREDIT_CARD",
+          "accountCategories": [
+            "CREDIT"
+          ],
+          "name": "Platinum Rewards Card",
+          "nickName": "Platinum Rewards Card",
+          "shortNickName": "CRD3092",
+          "availableBalance": "0.00",
+          "currentBalance": "1245.89",
+          "openingBalance": "0.00",
+          "principalBalance": "1245.89",
+          "availableCredit": "8754.11",
+          "odOptionsEligible": false,
+          "transferToEligible": false,
+          "transferFromEligible": false,
+          "quickBalanceEligible": true,
+          "billPayEligible": false,
+          "routingNumber": null,
+          "defaultZellePayment": false,
+          "maskedAccountNumber": "*3092",
+          "displayName": "Platinum Rewards Card"
+        }
+      ],
+      "empty": false
+    }
+  ]
+}

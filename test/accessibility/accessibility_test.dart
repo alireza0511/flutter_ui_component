@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/semantics.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:accessibility_test/accessibility_test.dart';
 import 'package:flutter_ui_component/flutter_ui_component.dart';
 
 void main() {
@@ -45,10 +46,10 @@ void main() {
       expect(find.bySemanticsLabel('Loading text button'), findsOneWidget);
 
       final primaryButtonSemantics = tester.getSemantics(find.bySemanticsLabel('Primary text button'));
-      expect(primaryButtonSemantics.hasAction(SemanticsAction.tap), isTrue);
+      expect(primaryButtonSemantics.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
 
       final disabledButtonSemantics = tester.getSemantics(find.bySemanticsLabel('Disabled text button'));
-      expect(disabledButtonSemantics.hasFlag(SemanticsFlag.hasEnabledState), isTrue);
+      expect(disabledButtonSemantics.getSemanticsData().hasFlag(SemanticsFlag.hasEnabledState), isTrue);
     });
 
     testWidgets('UberElevatedButton accessibility', (WidgetTester tester) async {
@@ -91,10 +92,10 @@ void main() {
       expect(find.bySemanticsLabel('Destructive elevated button'), findsOneWidget);
 
       final primaryButtonSemantics = tester.getSemantics(find.bySemanticsLabel('Primary elevated button'));
-      expect(primaryButtonSemantics.hasAction(SemanticsAction.tap), isTrue);
+      expect(primaryButtonSemantics.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
 
       final disabledButtonSemantics = tester.getSemantics(find.bySemanticsLabel('Disabled elevated button'));
-      expect(disabledButtonSemantics.hasFlag(SemanticsFlag.hasEnabledState), isTrue);
+      expect(disabledButtonSemantics.getSemanticsData().hasFlag(SemanticsFlag.hasEnabledState), isTrue);
     });
 
     testWidgets('UberAmountInput accessibility', (WidgetTester tester) async {
@@ -138,10 +139,10 @@ void main() {
       expect(find.bySemanticsLabel('Amount with validation error'), findsOneWidget);
 
       final amountInputSemantics = tester.getSemantics(find.bySemanticsLabel('Enter amount in dollars'));
-      expect(amountInputSemantics.hasFlag(SemanticsFlag.isTextField), isTrue);
+      expect(amountInputSemantics.getSemanticsData().hasFlag(SemanticsFlag.isTextField), isTrue);
 
       final disabledInputSemantics = tester.getSemantics(find.bySemanticsLabel('Disabled amount input'));
-      expect(disabledInputSemantics.hasFlag(SemanticsFlag.hasEnabledState), isTrue);
+      expect(disabledInputSemantics.getSemanticsData().hasFlag(SemanticsFlag.hasEnabledState), isTrue);
     });
 
     testWidgets('UberTextInput accessibility', (WidgetTester tester) async {
@@ -192,13 +193,13 @@ void main() {
       expect(find.bySemanticsLabel('Enter your comments'), findsOneWidget);
 
       final nameInputSemantics = tester.getSemantics(find.bySemanticsLabel('Enter your full name'));
-      expect(nameInputSemantics.hasFlag(SemanticsFlag.isTextField), isTrue);
+      expect(nameInputSemantics.getSemanticsData().hasFlag(SemanticsFlag.isTextField), isTrue);
 
       final passwordInputSemantics = tester.getSemantics(find.bySemanticsLabel('Enter your password'));
-      expect(passwordInputSemantics.hasFlag(SemanticsFlag.isObscured), isTrue);
+      expect(passwordInputSemantics.getSemanticsData().hasFlag(SemanticsFlag.isObscured), isTrue);
 
       final multilineInputSemantics = tester.getSemantics(find.bySemanticsLabel('Enter your comments'));
-      expect(multilineInputSemantics.hasFlag(SemanticsFlag.isMultiline), isTrue);
+      expect(multilineInputSemantics.getSemanticsData().hasFlag(SemanticsFlag.isMultiline), isTrue);
     });
 
     testWidgets('UberRadio accessibility', (WidgetTester tester) async {
@@ -257,11 +258,11 @@ void main() {
       expect(find.bySemanticsLabel('Disabled Option 3'), findsOneWidget);
 
       final option1Semantics = tester.getSemantics(find.bySemanticsLabel('Option 1'));
-      expect(option1Semantics.hasFlag(SemanticsFlag.isInMutuallyExclusiveGroup), isTrue);
-      expect(option1Semantics.hasAction(SemanticsAction.tap), isTrue);
+      expect(option1Semantics.getSemanticsData().hasFlag(SemanticsFlag.isInMutuallyExclusiveGroup), isTrue);
+      expect(option1Semantics.getSemanticsData().hasAction(SemanticsAction.tap), isTrue);
 
       final disabledOptionSemantics = tester.getSemantics(find.bySemanticsLabel('Disabled Option 3'));
-      expect(disabledOptionSemantics.hasFlag(SemanticsFlag.hasEnabledState), isTrue);
+      expect(disabledOptionSemantics.getSemanticsData().hasFlag(SemanticsFlag.hasEnabledState), isTrue);
     });
 
     testWidgets('UberRadioListTile accessibility', (WidgetTester tester) async {
@@ -404,12 +405,289 @@ void main() {
 
         await tester.tap(firstInput);
         await tester.pump();
-        
+
         await tester.sendKeyEvent(LogicalKeyboardKey.tab);
         await tester.pump();
-        
+
         await tester.sendKeyEvent(LogicalKeyboardKey.tab);
         await tester.pump();
+      });
+    });
+
+    group('AccountCard Accessibility', () {
+      testWidgets('meets tap target guidelines', (WidgetTester tester) async {
+        final account = AccountItem(
+          id: 'acc-1',
+          displayName: 'Premier Savings',
+          group: 'CASH',
+          details: const [
+            (label: 'Account Type', value: 'SAVINGS'),
+            (label: 'Available Balance', value: '\$87.49'),
+          ],
+        );
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: UberTheme.lightTheme,
+            home: Scaffold(
+              body: AccountCard(
+                account: account,
+                onTap: () {},
+              ),
+            ),
+          ),
+        );
+
+        await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+        await expectLater(tester, meetsGuideline(iOSTapTargetGuideline));
+      });
+
+      testWidgets('meets text contrast guideline', (WidgetTester tester) async {
+        final account = AccountItem(
+          id: 'acc-1',
+          displayName: 'Premier Savings',
+          group: 'CASH',
+          details: const [
+            (label: 'Account Type', value: 'SAVINGS'),
+          ],
+        );
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: UberTheme.lightTheme,
+            home: Scaffold(
+              body: AccountCard(
+                account: account,
+                onTap: () {},
+              ),
+            ),
+          ),
+        );
+
+        await expectLater(tester, meetsGuideline(textContrastGuideline));
+      });
+    });
+
+    group('SubAccountTile Accessibility', () {
+      testWidgets('meets tap target guidelines', (WidgetTester tester) async {
+        const subItem = SubAccountItem(
+          id: 'sub-1',
+          displayName: 'Jamaica 2027',
+          balance: 100.76,
+        );
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: UberTheme.lightTheme,
+            home: Scaffold(
+              body: SubAccountTile(
+                item: subItem,
+                onTap: () {},
+              ),
+            ),
+          ),
+        );
+
+        await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+        await expectLater(tester, meetsGuideline(iOSTapTargetGuideline));
+      });
+    });
+
+    group('AccountSelectionContent Accessibility', () {
+      testWidgets('meets labeled tap target guideline', (WidgetTester tester) async {
+        final groups = [
+          GroupItem(
+            label: 'CASH',
+            accounts: [
+              AccountItem(
+                id: 'acc-1',
+                displayName: 'Premier Savings',
+                group: 'CASH',
+                details: const [
+                  (label: 'Account Type', value: 'SAVINGS'),
+                ],
+              ),
+            ],
+          ),
+        ];
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: UberTheme.lightTheme,
+            home: Scaffold(
+              body: SizedBox(
+                height: 500,
+                child: AccountSelectionContent(
+                  title: 'Transfer From',
+                  groupItems: groups,
+                  showCloseButton: true,
+                  onClose: () {},
+                  onAccountSelected: (_, __) {},
+                ),
+              ),
+            ),
+          ),
+        );
+
+        await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+      });
+
+      testWidgets('close button has tooltip', (WidgetTester tester) async {
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: UberTheme.lightTheme,
+            home: Scaffold(
+              body: SizedBox(
+                height: 400,
+                child: AccountSelectionContent(
+                  title: 'Title',
+                  groupItems: const [],
+                  showCloseButton: true,
+                  onClose: () {},
+                ),
+              ),
+            ),
+          ),
+        );
+
+        expect(find.byTooltip('Close'), findsOneWidget);
+      });
+    });
+
+    group('AccountList Focus Order Tests', () {
+      testWidgets('Tab navigates through account cards in order', (WidgetTester tester) async {
+        final groups = [
+          GroupItem(
+            label: 'CASH',
+            accounts: [
+              AccountItem(
+                id: 'acc-1',
+                displayName: 'Account One',
+                group: 'CASH',
+              ),
+              AccountItem(
+                id: 'acc-2',
+                displayName: 'Account Two',
+                group: 'CASH',
+              ),
+            ],
+          ),
+        ];
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: UberTheme.lightTheme,
+            home: Scaffold(
+              body: SizedBox(
+                height: 500,
+                child: AccountSelectionContent(
+                  title: 'Title',
+                  groupItems: groups,
+                  showCloseButton: true,
+                  onClose: () {},
+                  onAccountSelected: (_, __) {},
+                ),
+              ),
+            ),
+          ),
+        );
+
+        // Tab through focusable elements
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pump();
+
+        // All account cards and close button should be focusable
+        expect(find.byType(AccountCard), findsNWidgets(2));
+        expect(find.byIcon(Icons.close), findsOneWidget);
+      });
+
+      testWidgets('Tab navigates into sub-account tiles', (WidgetTester tester) async {
+        final groups = [
+          GroupItem(
+            label: 'CASH',
+            accounts: [
+              AccountItem(
+                id: 'acc-1',
+                displayName: 'Premier Savings',
+                group: 'CASH',
+                subItems: const [
+                  SubAccountItem(id: 'sub-1', displayName: 'Sub One', balance: 100.0),
+                  SubAccountItem(id: 'sub-2', displayName: 'Sub Two', balance: 200.0),
+                ],
+              ),
+            ],
+          ),
+        ];
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: UberTheme.lightTheme,
+            home: Scaffold(
+              body: SizedBox(
+                height: 500,
+                child: AccountSelectionContent(
+                  title: 'Title',
+                  groupItems: groups,
+                  onAccountSelected: (_, __) {},
+                ),
+              ),
+            ),
+          ),
+        );
+
+        // Tab through sub-account tiles
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pump();
+
+        expect(find.byType(SubAccountTile), findsNWidgets(2));
+      });
+
+      testWidgets('Enter selects focused account', (WidgetTester tester) async {
+        AccountItem? selected;
+        final groups = [
+          GroupItem(
+            label: 'CASH',
+            accounts: [
+              AccountItem(
+                id: 'acc-1',
+                displayName: 'Premier Savings',
+                group: 'CASH',
+              ),
+            ],
+          ),
+        ];
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: UberTheme.lightTheme,
+            home: Scaffold(
+              body: SizedBox(
+                height: 400,
+                child: AccountSelectionContent(
+                  title: 'Title',
+                  groupItems: groups,
+                  onAccountSelected: (account, _) => selected = account,
+                ),
+              ),
+            ),
+          ),
+        );
+
+        // Tab to focus the account card
+        await tester.sendKeyEvent(LogicalKeyboardKey.tab);
+        await tester.pump();
+
+        // Press Enter to select
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+        await tester.pump();
+
+        expect(selected?.id, 'acc-1');
       });
     });
   });
