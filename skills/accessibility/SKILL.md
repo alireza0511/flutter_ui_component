@@ -101,6 +101,232 @@ Semantics(
 )
 ```
 
+### Hard Rules — Always Enforce
+
+#### Every image must be accessible or explicitly decorative
+
+All `Image`, `Image.asset`, `Image.network`, `Icon`, and `SvgPicture` widgets must either:
+- Have a `semanticLabel` describing the content, OR
+- Be marked as decorative with `excludeFromSemantics: true`
+
+There is no middle ground. An unlabeled image is invisible to screen readers, Voice Access, and Switch Access — but still takes up space, confusing the experience.
+
+```dart
+// CORRECT — meaningful image with label
+Image.asset(
+  'assets/profile.png',
+  semanticLabel: 'Profile photo of John Doe',
+)
+
+// CORRECT — decorative image excluded
+Image.asset(
+  'assets/decorative_wave.png',
+  excludeFromSemantics: true, // purely visual, no meaning
+)
+
+// CORRECT — icon with label
+Icon(Icons.delete, semanticsLabel: 'Delete')
+
+// WRONG — image with no semantic info at all
+Image.asset('assets/logo.png')  // screen reader says nothing, voice user can't reference it
+```
+
+#### Never use GestureDetector for tap targets
+
+`GestureDetector` is pointer-only. It does NOT receive keyboard focus, does NOT appear in Switch Access scanning, and does NOT work with Voice Access. Always use Material interactive widgets.
+
+```dart
+// WRONG — unreachable via keyboard, switch, or voice
+GestureDetector(
+  onTap: _onTap,
+  child: Container(child: Text('Click me')),
+)
+
+// CORRECT — focusable, keyboard-activatable, scannable, voice-targetable
+InkWell(
+  onTap: _onTap,
+  child: Container(child: Text('Click me')),
+)
+
+// ALSO CORRECT — use the appropriate Material widget
+ElevatedButton(onPressed: _onTap, child: Text('Click me'))
+TextButton(onPressed: _onTap, child: Text('Click me'))
+IconButton(onPressed: _onTap, icon: Icon(Icons.add), tooltip: 'Add item')
+```
+
+The only acceptable use of `GestureDetector` is for non-interactive gestures (e.g., detecting swipe direction for a custom scroll physics) that have an accessible alternative.
+
+#### Icon-only buttons must have tooltip or semanticLabel
+
+Screen readers, Voice Access, and Switch Access have no way to convey the purpose of an icon-only button without a text label. Every `IconButton` must have a `tooltip` (preferred — also gives sighted users a hover hint) or at minimum an `Icon` with `semanticsLabel`.
+
+```dart
+// WRONG — screen reader says nothing, voice user can't say "tap [???]"
+IconButton(
+  onPressed: _delete,
+  icon: Icon(Icons.delete),
+)
+
+// CORRECT — tooltip serves as accessible name AND visible hint
+IconButton(
+  onPressed: _delete,
+  icon: Icon(Icons.delete),
+  tooltip: 'Delete item',
+)
+
+// ALSO CORRECT — semanticsLabel on the Icon itself
+IconButton(
+  onPressed: _delete,
+  icon: Icon(Icons.delete, semanticLabel: 'Delete item'),
+)
+```
+
+#### Never use ExcludeSemantics on non-decorative content
+
+`ExcludeSemantics` completely hides the wrapped widget from all assistive technology — screen readers, Voice Access, Switch Access, and keyboard focus. Only use it for **purely decorative** elements (background patterns, dividers, ornamental icons).
+
+If content conveys any meaning at all — a status indicator, an avatar with a name, an informational icon — it is NOT decorative and must NOT be excluded.
+
+```dart
+// CORRECT — decorative divider, no meaning
+ExcludeSemantics(child: Divider())
+
+// CORRECT — decorative background pattern
+ExcludeSemantics(child: Image.asset('assets/bg_pattern.png'))
+
+// WRONG — this icon conveys error state, hiding it loses information
+ExcludeSemantics(
+  child: Icon(Icons.error, color: Colors.red),  // user won't know there's an error
+)
+
+// WRONG — this image is the user's profile, it has meaning
+ExcludeSemantics(
+  child: CircleAvatar(backgroundImage: NetworkImage(user.photoUrl)),
+)
+
+// CORRECT — give it a label instead
+CircleAvatar(
+  backgroundImage: NetworkImage(user.photoUrl),
+  child: Semantics(label: 'Profile photo of ${user.name}', child: Container()),
+)
+```
+
+#### Never wrap Text in fixed-height containers
+
+`SizedBox(height: N)` or `Container(height: N)` around text will clip content when users set system font size to 150-200% (Android Display size, iOS Dynamic Type). Always use `minHeight` constraints so the container grows with the text.
+
+```dart
+// WRONG — text clips at large font sizes
+SizedBox(
+  height: 48,
+  child: Center(child: Text('This will be clipped at 200% font')),
+)
+
+// WRONG — same problem with Container
+Container(
+  height: 32,
+  child: Text('Clipped label'),
+)
+
+// CORRECT — minimum height, grows with text
+ConstrainedBox(
+  constraints: const BoxConstraints(minHeight: 48),
+  child: Center(child: Text('This grows with font size')),
+)
+
+// CORRECT — no height constraint at all (let content dictate size)
+Padding(
+  padding: const EdgeInsets.symmetric(vertical: 12),
+  child: Text('Natural height'),
+)
+```
+
+#### Icon and graphical element contrast must meet 3:1
+
+Non-text UI components (icons, chart elements, form field borders, custom graphics) require a minimum 3:1 contrast ratio against their background. This is separate from text contrast (4.5:1). Icons that fail this threshold are invisible to users with low vision — including those using color correction or high contrast modes.
+
+
+#### Focus must not trigger unexpected context changes
+
+When a widget receives focus (via Tab, Switch Access scan, or screen reader navigation), it must NOT automatically trigger side effects like navigation, form submission, dialog opening, or content changes. Focus is for **reading and selecting**, not for **acting**.
+
+```dart
+// WRONG — navigates away just because the element got focus
+Focus(
+  onFocusChange: (hasFocus) {
+    if (hasFocus) Navigator.push(context, ...); // unexpected navigation on focus
+  },
+  child: ListTile(...),
+)
+
+// WRONG — submits form on focus
+Focus(
+  onFocusChange: (hasFocus) {
+    if (hasFocus) _submitForm(); // action on focus, not on activation
+  },
+  child: Text('Submit'),
+)
+
+// CORRECT — action happens on explicit activation (tap/Enter/Space)
+ElevatedButton(
+  onPressed: _submitForm, // only fires on deliberate activation
+  child: Text('Submit'),
+)
+```
+
+#### Interactive elements must have correct semantic roles
+
+All interactive widgets must expose the correct role (button, text field, checkbox, etc.) to assistive technology. Using built-in Flutter Material widgets guarantees this. If you build custom interactive elements, they MUST declare their role via `Semantics`.
+
+```dart
+// WRONG — custom interactive widget with no role
+GestureDetector(
+  onTap: _toggle,
+  child: Container(
+    color: isOn ? Colors.green : Colors.grey,
+    child: Text(isOn ? 'ON' : 'OFF'),
+  ),
+)
+
+// CORRECT — use the built-in widget that declares the role
+Switch(value: isOn, onChanged: _toggle)
+
+// CORRECT — if custom widget is unavoidable, declare the role
+Semantics(
+  toggled: isOn,
+  label: 'Power',
+  child: GestureDetector(...), // still prefer InkWell, but role is declared
+)
+```
+
+#### App must support both screen orientations
+
+Do not lock the app to a single orientation. Users with motor impairments may have devices mounted in a fixed position (landscape or portrait). Content must remain usable and consistent in both orientations — no content loss, no layout breakage.
+
+
+#### Interactive controls must not overlap
+
+Touch targets must have adequate spacing so they don't overlap each other. Overlapping controls cause accidental activations for all users and are especially problematic for users with motor impairments, Voice Access (ambiguous target regions), and Switch Access.
+
+```dart
+// WRONG — buttons stacked with no spacing, targets overlap
+Row(
+  children: [
+    IconButton(onPressed: _edit, icon: Icon(Icons.edit), tooltip: 'Edit'),
+    IconButton(onPressed: _delete, icon: Icon(Icons.delete), tooltip: 'Delete'),
+  ],
+)
+
+// CORRECT — adequate spacing between targets
+Row(
+  children: [
+    IconButton(onPressed: _edit, icon: Icon(Icons.edit), tooltip: 'Edit'),
+    const SizedBox(width: 8),
+    IconButton(onPressed: _delete, icon: Icon(Icons.delete), tooltip: 'Delete'),
+  ],
+)
+```
+
 ### Anti-patterns — flag these during audit
 
 ```dart
@@ -135,15 +361,17 @@ Semantics(
 1. **Use Flutter's Built-in Semantics First** — Rely on widget-native accessibility. Only add custom `Semantics` for edge cases listed above. This ensures future Flutter updates automatically improve OS compatibility across all services.
 2. **Semantic Labels** — Use the widget's own `semanticLabel` parameter. Screen readers, Voice Access, and Switch Access all depend on this to identify elements.
 3. **Touch Targets** — Minimum 48x48 dp for all tappable elements (Material guideline). iOS Human Interface Guidelines recommend 44x44 pt. This affects touch, Switch Access hit areas, and Voice Access target recognition.
-4. **Keyboard & Focus Navigation** — All interactive widgets must be focusable and operable via external keyboard (Tab/Shift+Tab to navigate, Enter/Space to activate). Focus order must be logical. Focus indicators must be visible.
+4. **Keyboard & Focus Navigation** — All interactive widgets must be focusable and operable via external keyboard (Tab/Shift+Tab to navigate, Enter/Space to activate). Focus order must be logical. Focus indicators must be **clearly visible** — the focus ring/highlight must have sufficient contrast (3:1 minimum against adjacent colors) so users can always see which element is focused. Never hide or remove focus indicators.
 5. **Voice Access / Voice Control** — All interactive elements must have visible labels or accessible names so users can say "tap [label]" to activate them. Unlabeled elements are invisible to voice control.
 6. **Switch Access / Switch Control** — Widgets must be reachable via linear scanning. No element should be skipped or trapped. Group related elements logically so scanning is efficient.
-7. **Screen Reader Announcements** — Widgets must announce role, name, and state changes. Prefer Flutter's built-in announcements over manual `Semantics` properties.
-8. **Color Independence** — Information must not be conveyed by color alone. Provide text, icons, or patterns as secondary indicators.
-9. **Animation & Motion Safety** — Respect `MediaQuery.disableAnimations` and `AccessibilityFeatures.reduceMotion`. Never auto-play animations that cannot be paused.
-10. **Contrast Ratios** — Normal text: >= 4.5:1. Large text (18sp+ or 14sp bold): >= 3:1.
-11. **Text Scaling / Dynamic Type** — Widgets must support system font size scaling (Android Display size, iOS Dynamic Type) up to 200% without content clipping, truncation, or layout breakage. Use `MediaQuery.textScaleFactor` awareness. Avoid fixed-height containers around text.
-12. **Assistive Access (iOS)** — Widgets should work in the simplified, large-target UI mode. This means: clear labels, large touch targets, and simple interaction patterns (no complex gestures required).
+7. **Content Grouping** — Related elements (icon + label, avatar + name, title + subtitle) should be grouped using `MergeSemantics` or read as a single semantic node. This prevents screen readers from announcing fragments and reduces Switch Access scan targets. Conversely, distinct interactive elements must NOT be merged — each action needs its own semantic node.
+8. **Screen Reader Announcements** — Widgets must announce role, name, and state changes. Prefer Flutter's built-in announcements over manual `Semantics` properties.
+9. **Color Independence** — Information must not be conveyed by color alone. Provide text, icons, or patterns as secondary indicators.
+10. **Animation & Motion Safety** — Respect `MediaQuery.disableAnimations` and `AccessibilityFeatures.reduceMotion`. Never auto-play animations that cannot be paused.
+11. **Contrast Ratios** — Normal text: >= 4.5:1. Large text (18sp+ or 14sp bold): >= 3:1. Non-text UI components (icons, borders, graphical elements): >= 3:1.
+12. **Text Scaling / Dynamic Type** — Widgets must support system font size scaling (Android Display size, iOS Dynamic Type) up to 200% without content clipping, truncation, or layout breakage. Use `MediaQuery.textScaleFactor` awareness. Avoid fixed-height containers around text.
+13. **Screen Orientation** — App must support both portrait and landscape. Do not lock orientation. Content must remain consistent and usable in both orientations with no information loss.
+14. **Assistive Access (iOS)** — Widgets should work in the simplified, large-target UI mode. This means: clear labels, large touch targets, and simple interaction patterns (no complex gestures required).
 
 ## Accessibility Services Reference
 
@@ -336,17 +564,20 @@ Scan the codebase for issues. Check each widget file in `lib/src/widgets/` and r
 #### Required Checklist — WCAG 2 AA
 
 **Screen Readers (TalkBack / VoiceOver):**
-- [ ] All images/icons have text alternatives (via widget's own `semanticLabel` param)
+- [ ] All images/icons have `semanticLabel` OR `excludeFromSemantics: true` — no unlabeled images
 - [ ] Interactive elements have accessible names announced correctly
+- [ ] All interactive elements expose correct semantic role (button, text field, checkbox, etc.) — use built-in widgets or declare via `Semantics`
 - [ ] Widgets announce correct role via built-in behavior (not redundant `Semantics` wrappers)
 - [ ] State changes announced via widget-native semantics (`enabled`, `selected`, `checked`)
+- [ ] Related content grouped with `MergeSemantics` — icon+label, avatar+name read as single unit
 - [ ] Content has logical reading order for swipe navigation
 - [ ] No unnecessary `Semantics` wrappers (flag as anti-pattern)
 
 **Keyboard / External Input:**
 - [ ] All interactive widgets are focusable via Tab key
 - [ ] Focus order matches visual layout order
-- [ ] Focus indicator (ring/highlight) is visible on every focusable element
+- [ ] Focus indicator (ring/highlight) is visible on every focusable element with sufficient contrast (3:1)
+- [ ] Focus does NOT trigger unexpected context changes (no navigation, submission, or dialog on focus alone)
 - [ ] Buttons/links activate with Enter or Space
 - [ ] Radio groups navigable with Arrow keys
 - [ ] Dialogs/sheets dismissible with Escape
@@ -356,7 +587,7 @@ Scan the codebase for issues. Check each widget file in `lib/src/widgets/` and r
 **Voice Access / Voice Control:**
 - [ ] All interactive elements have visible text labels or accessible names
 - [ ] Labels are unique and descriptive within the visible screen
-- [ ] Icon-only buttons have `tooltip` or `semanticLabel`
+- [ ] Every icon-only button has `tooltip` (preferred) or `semanticLabel` — no unlabeled icon buttons
 - [ ] No gesture-only interactions without an accessible alternative
 
 **Switch Access / Switch Control:**
@@ -367,13 +598,18 @@ Scan the codebase for issues. Check each widget file in `lib/src/widgets/` and r
 
 **Touch & Motor:**
 - [ ] Touch targets >= 48x48 dp (Android) / 44x44 pt (iOS)
+- [ ] Interactive controls do not overlap — adequate spacing between adjacent targets
 - [ ] Custom gestures have accessible alternatives (no swipe-only/long-press-only actions)
-- [ ] Adequate spacing between targets to prevent accidental taps
 
 **Display & Visual:**
-- [ ] Color contrast >= 4.5:1 for normal text, >= 3:1 for large text
+- [ ] Text color contrast >= 4.5:1 for normal text, >= 3:1 for large text
+- [ ] Non-text element contrast (icons, borders, graphical components) >= 3:1 against background
 - [ ] Information not conveyed by color alone — text/icon/pattern alternatives provided
-- [ ] Text scales up to 200% without clipping, truncation, or layout breakage (no fixed-height containers around text)
+- [ ] No fixed-height containers (`SizedBox(height:)`, `Container(height:)`) wrapping Text — use `minHeight` constraints
+- [ ] Text scales up to 200% without clipping, truncation, or layout breakage
+- [ ] Content works in both portrait and landscape orientations — no orientation lock
+- [ ] Content remains consistent across orientations — no information lost when rotated
+- [ ] `ExcludeSemantics` only used on purely decorative content — never on meaningful icons, images, or status indicators
 - [ ] Respects `MediaQuery.disableAnimations` / `accessibleNavigation`
 - [ ] No content flashes more than 3 times per second
 
