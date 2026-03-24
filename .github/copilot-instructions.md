@@ -90,9 +90,7 @@ Only dependencies already in `pubspec.yaml` are allowed. Adding a new one requir
 
 ## Reference Files
 
-- `Agent.md` — LLM guide for JSON-driven UI generation
-- `design_agent.md` — Figma JSON to Flutter code generator
-- `skills/accessibility/SKILL.md` — Detailed WCAG audit workflow
+- `skills/accessibility/SKILL.md` — WCAG 2 AA audit workflow (mobile)
 - `skills/material-theming/SKILL.md` — Theme system guidance
-- `skills/widget-development/SKILL.md` — Full widget development guidelines
+- `skills/widget-development/SKILL.md` — Widget development, Figma JSON, JSON widget system
 - `skills/testing/SKILL.md` — Complete test suite guidelines (functionality, golden, a11y, interaction)
