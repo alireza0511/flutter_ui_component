@@ -9,40 +9,32 @@ A Flutter package providing reusable UI components inspired by the Uber Base Des
 ├── lib/
 │   ├── flutter_ui_component.dart   ← Package exports
 │   └── src/
-│       ├── theme/
-│       │   └── uber_theme.dart     ← UberColorTokens, UberTypography, UberTheme
-│       ├── widgets/
-│       │   ├── uber_elevated_button.dart
-│       │   ├── uber_text_button.dart
-│       │   ├── uber_text_input.dart
-│       │   ├── uber_amount_input.dart
-│       │   ├── uber_radio.dart
-│       │   └── account_list/       ← Account selection feature
+│       ├── theme/uber_theme.dart   ← UberColorTokens, UberTypography, UberTheme
+│       ├── widgets/                ← All Uber* widget files
 │       └── json/                   ← JSON widget builders
-├── skills/
-│   ├── accessibility/
-│   │   └── SKILL.md                ← WCAG audit & remediation
-│   ├── material-theming/
-│   │   └── SKILL.md                ← Theme system guidance
-│   ├── widget-development/
-│   │   └── SKILL.md                ← UI component development rules
-│   └── testing/
-│       └── SKILL.md                ← Test suite generation
-├── test/                           ← Unit & widget tests
+├── skills/                         ← Detailed guidelines (source of truth)
+│   ├── accessibility/SKILL.md
+│   ├── material-theming/SKILL.md
+│   ├── widget-development/SKILL.md
+│   └── testing/SKILL.md
+├── test/
+│   ├── unit/                       ← Functionality & interaction tests
+│   ├── golden/                     ← Visual regression tests
+│   └── accessibility/              ← A11y guideline tests
 ├── example/                        ← Example app
 └── docs/                           ← Documentation
 ```
 
-## Skills
+## Skills — Source of Truth
 
-Skills are specialized prompts that provide domain expertise. Invoke them by reading the relevant `SKILL.md` file and following its instructions.
+Skills contain all detailed rules, patterns, and workflows. **Read the relevant skill before doing any work.** Do not duplicate skill content elsewhere.
 
-| Skill | Path | Description |
-|-------|------|-------------|
-| `accessibility` | `skills/accessibility/SKILL.md` | WCAG 2 AA audit & remediation (mobile) |
-| `material-theming` | `skills/material-theming/SKILL.md` | Theme system creation & modification |
-| `widget-development` | `skills/widget-development/SKILL.md` | Build widgets from description, Figma JSON, or design docs + JSON widget system |
-| `testing` | `skills/testing/SKILL.md` | Complete test suites: functionality, golden, a11y, interaction |
+| Skill | Path | When to read |
+|-------|------|--------------|
+| **Widget Development** | `skills/widget-development/SKILL.md` | Building or modifying any widget, Figma JSON to code, JSON widget system, component library reference |
+| **Accessibility** | `skills/accessibility/SKILL.md` | Any accessibility work — WCAG 2 AA (required), mobile semantics, TalkBack/VoiceOver |
+| **Material Theming** | `skills/material-theming/SKILL.md` | Adding colors, typography, component themes to `UberTheme` |
+| **Testing** | `skills/testing/SKILL.md` | Writing tests — functionality, golden, a11y, interaction |
 
 ### Adding a New Skill
 
@@ -65,51 +57,16 @@ Skills are specialized prompts that provide domain expertise. Invoke them by rea
 - **json_dynamic_widget** for JSON-driven UI rendering
 - **golden_toolkit** for visual regression tests
 
-## Architecture
-
-### Theme System
-
-Single source of truth in `lib/src/theme/uber_theme.dart`:
-- `UberColorTokens` — static color constants (grayscale, green, blue, red, yellow)
-- `UberTypography` — Material 3 type scale
-- `UberTheme` — `lightTheme` and `darkTheme` with component themes
-
-### Widget Conventions
-
-All custom widgets follow this pattern:
-- Prefix: `Uber` (e.g., `UberElevatedButton`)
-- Files: `uber_<snake_case>.dart` in `lib/src/widgets/`
-- Enums for size: `Uber<Widget>Size { small, medium, large }`
-- Enums for variant: `Uber<Widget>Variant { primary, secondary, destructive }`
-- Required `semanticLabel` parameter for accessibility
-- Support `enabled` state
-- Use `UberColorTokens` and theme — no hardcoded colors
-- Export via `lib/flutter_ui_component.dart`
-
-### JSON Widget System
-
-Components register as JSON builders via `UberJsonWidgetBuilders` for dynamic rendering. Types: `uber_text_button`, `uber_elevated_button`, `uber_amount_input`, `uber_text_input`, `uber_radio`, `uber_radio_list_tile`.
-
-## Development
-
-### Running Tests
+## Quick Reference
 
 ```bash
-flutter test
+flutter test                              # all tests
+flutter test test/unit/                   # functionality only
+flutter test test/golden/                 # golden only
+flutter test test/accessibility/          # a11y only
+flutter test --update-goldens test/golden/ # regenerate goldens
 ```
 
-### Code Style
+Code style: `flutter_lints`, `const` constructors, `EdgeInsets.symmetric`/`.only`, `Theme.of(context)` for all colors/typography.
 
-- Follow `flutter_lints` rules (`analysis_options.yaml`)
-- Use `const` constructors where possible
-- Prefer `EdgeInsets.symmetric` / `.only` over `.fromLTRB`
-- Use `Theme.of(context)` — never hardcode colors or text styles in widgets
-
-### Commits
-
-Use conventional commits:
-```
-feat(widgets): add UberCheckbox component
-fix(theme): correct dark mode contrast for error state
-docs(skills): add testing skill
-```
+Commits: `feat(widgets): add UberCheckbox`, `fix(theme): correct dark mode contrast`
