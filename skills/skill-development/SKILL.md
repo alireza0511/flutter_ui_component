@@ -20,7 +20,56 @@ Skills are loaded into the LLM context window on every invocation. Every line co
 | Needs justification | 300–500 | Complex domains (e.g., accessibility with platform matrix) |
 | Too large | > 500 | Split into multiple skills or compress aggressively |
 
-**Measure before committing:** count lines with `wc -l skills/<name>/SKILL.md`. If over budget, compress.
+**Measure before committing:** count lines with `wc -l skills/<name>/SKILL.md`. If over budget, move detailed content to `reference.md` (see below).
+
+## File Split — SKILL.md vs reference.md
+
+Each skill directory can contain two files:
+
+```
+skills/<name>/
+├── SKILL.md        ← Always loaded into context. Must stay lean.
+└── reference.md    ← Loaded on demand. Houses heavy content.
+```
+
+### What goes in SKILL.md (always loaded)
+
+- Frontmatter, role statement, hard rules
+- Core decision logic (tables, mappings, short examples)
+- Workflow steps and checklist
+- **Budget: < 300 lines**
+
+### What goes in reference.md (loaded on demand)
+
+- Full code examples (complete widgets, test suites)
+- Audit/report templates
+- Extended mapping tables (e.g., widget-to-accessibility matrix)
+- Platform-specific checklists by level/tier
+- External references and links
+
+### How SKILL.md references it
+
+In SKILL.md, point to reference.md when the agent needs deeper detail:
+
+```markdown
+For full code examples, read `skills/<name>/reference.md` § Section Name.
+```
+
+The agent reads reference.md only when it needs that section — not on every invocation.
+
+### reference.md format
+
+No frontmatter required. Use clear `##` section headings so SKILL.md can point to specific sections with `§`.
+
+```markdown
+# <Skill Name> — Reference
+
+## Section Name
+[detailed content]
+
+## Another Section
+[detailed content]
+```
 
 ## Required Structure
 
@@ -189,7 +238,9 @@ Don't explain what Dart syntax does. Don't explain what Flutter widgets are. Onl
 - [ ] Code examples show only relevant lines (no boilerplate)
 - [ ] Workflow has 3-7 numbered steps
 - [ ] Checklist covers all deliverables
-- [ ] Total file is under 300 lines (or justified if over)
+- [ ] Total SKILL.md is under 300 lines (or justified if over)
+- [ ] Heavy content (full examples, templates, matrices) moved to `reference.md`
+- [ ] SKILL.md uses `§` references to point to reference.md sections
 - [ ] `wc -l` verified before committing
 
 ## Workflow — Creating a New Skill
@@ -199,6 +250,7 @@ Don't explain what Dart syntax does. Don't explain what Flutter widgets are. Onl
 3. **Write frontmatter** — name, description (searchable), tools, argument-hint.
 4. **Write hard rules first** — the non-negotiable constraints. One WRONG/CORRECT pair each.
 5. **Add core content** — tables, minimal examples, project-specific guidance.
-6. **Add workflow + checklist** — how the agent executes, what it verifies.
-7. **Compress** — review every line. Delete anything that doesn't change agent behavior. Run `wc -l`.
-8. **Register** — add the skill to the table in both `CLAUDE.md` and `.github/copilot-instructions.md`.
+6. **Split heavy content** — move full code examples, templates, and matrices to `reference.md`. Add `§` references in SKILL.md.
+7. **Add workflow + checklist** — how the agent executes, what it verifies.
+8. **Compress** — review every line. Delete anything that doesn't change agent behavior. Run `wc -l`.
+9. **Register** — add the skill to the table in both `CLAUDE.md` and `.github/copilot-instructions.md`.
