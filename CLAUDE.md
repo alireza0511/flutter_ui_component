@@ -35,6 +35,7 @@ Skills contain all detailed rules, patterns, and workflows. **Read the relevant 
 | **Accessibility** | `skills/accessibility/SKILL.md` | Any accessibility work — WCAG 2 AA (required), mobile semantics, TalkBack/VoiceOver |
 | **Material Theming** | `skills/material-theming/SKILL.md` | Adding colors, typography, component themes to `UberTheme` |
 | **Testing** | `skills/testing/SKILL.md` | Writing tests — functionality, golden, a11y, interaction |
+| **Skill Development** | `skills/skill-development/SKILL.md` | Creating or reviewing SKILL.md files — structure, token budget, quality |
 
 ### Adding a New Skill
 
